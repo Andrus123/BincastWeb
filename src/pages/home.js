@@ -2,9 +2,12 @@ import React from "react";
 
 import { useQuery, gql } from "@apollo/client";
 
+import NoteFeed from "../components/NoteFeed";
+import Button from "../components/Button";
+
 // our Graphql query, stored as a variable
 const GET_NOTES = gql`
-  query noteFeed($cursor: String){
+  query noteFeed($cursor: String) {
     noteFeed(cursor: $cursor) {
       cursor
       hasNextPage
@@ -30,14 +33,41 @@ const Home = () => {
   // if the data is loading, display a loading message
   if (loading) return <p>Loading...</p>;
   // if there is an error fetching the data, display an error message
-  if (error) return <p>Error!</p>
+  if (error) return <p>Error!</p>;
   // if the data is successful, display the data in our UI
   return (
-    <div>
-      {data.noteFeed.notes.map(note => (
-        <div key={note.id}>{note.author.username}</div>
-      ))}
-    </div>
+    // add a <React.Fragment> element to provide a parent element
+    <React.Fragment>
+      <NoteFeed notes={data.noteFeed.notes} />
+      {/* Only display the Load More Button if hasNextPage is true */}
+      {data.noteFeed.hasNextPage && (
+        // onClick perform a query, passing the current cursor as a variable
+        <Button
+          onClick={() =>
+            fetchMore({
+              variables: {
+                cursor: data.noteFeed.cursor
+              },
+              updateQuery: (previousResult, { fetchMoreResult }) => {
+                return {
+                  noteFeed: {
+                    cursor: fetchMoreResult.noteFeed.cursor,
+                    hasNextPage: fetchMoreResult.noteFeed.hasNextPage,
+                    //combine the new results and the old
+                    notes: [
+                      ...previousResult.noteFeed.notes,
+                      ...fetchMoreResult.noteFeed.notes
+                    ],
+                    __typename: 'noteFeed',
+                  },
+                };
+              }
+            })
+          }>
+          Load More
+        </Button>
+      )}
+    </React.Fragment>
   );
 };
 

@@ -40,13 +40,13 @@ const Note = ({ note }) => {
       </MetaInfo>
       <MetaInfo>
         <em>by</em> {note.author.username} <br />
-        {format(parseISO(note.createdAt),'dd.MM.yyyy')}
+        {format(parseISO(note.createdAt),'MMMM do yyyy')}
       </MetaInfo>
       <UserActions>
         <em>Favorites:</em> {note.favoriteCount}
         </UserActions>
       </MetaData>
-      <ReactMarkdown source={note.content} />
+      <ReactMarkdown children={note.content} />
     </StyledNote>
   );
 };

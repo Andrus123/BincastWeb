@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-
+import { useMutation, gql } from "@apollo/client";
 import Button from "../components/Button";
 
 const Wrapper = styled.div`
@@ -22,6 +22,12 @@ const Form = styled.form`
   }
 `;
 
+const SIGNUP_USER= gql`
+  mutation signUp($email: String!, $username: String!, $password: String!) {
+    signUp(email: $email, username: $username, password: $password)
+  }
+`;
+
 // include the props passed to the component for later use
 const SignUp = (props) => {
   // set the default state of the form
@@ -31,7 +37,7 @@ const SignUp = (props) => {
   const onChange = (event) => {
     setValues({
       ...values,
-      [event.target.name]: event.target.value,
+      [event.target.name]: event.target.value
     });
   };
 
@@ -40,14 +46,26 @@ const SignUp = (props) => {
     document.title = "Sign Up - Bincast";
   });
 
+  const [signUp] = useMutation(SIGNUP_USER, {
+    onCompleted: data => {
+      //console.log the JSON Web Token when the mutation is complete
+      console.log(data.signUp);
+    }
+  });
+
   return (
     <Wrapper>
       <h2>Sign Up</h2>
       <Form
         onSubmit={(event) => {
           event.preventDefault();
-          console.log(values);
-        }}>
+          signUp({
+            variables: {
+              ...values
+            }
+          });
+        }}
+        >
         <label htmlFor="username">Username:</label>
         <input
           required

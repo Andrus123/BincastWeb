@@ -15,8 +15,8 @@ const Pages = () => {
   return (
     <Router>
       <Layout>
-        <Route path="/signup" component={SignUp} />
         <Route exact path="/" component={Home} />
+        <Route path="/signup" component={SignUp} />
         <Route path="/mybins" component={MyBins} />
         <Route path="/favorites" component={Favorites} />
         <Route path="/note/:id" component={NotePage} />

@@ -23,7 +23,7 @@ const Form = styled.form`
 `;
 
 const SIGNUP_USER= gql`
-  mutation signUp($email: String!, $username: String!, $password: String!) {
+   mutation signUp($email: String!, $username: String!, $password: String!) {
     signUp(email: $email, username: $username, password: $password)
   }
 `;
@@ -46,10 +46,12 @@ const SignUp = (props) => {
     document.title = "Sign Up - Bincast";
   });
 
-  const [signUp] = useMutation(SIGNUP_USER, {
+  const [signUp, { loading, error}] = useMutation(SIGNUP_USER, {
     onCompleted: data => {
       //console.log the JSON Web Token when the mutation is complete
       console.log(data.signUp);
+      // store the JWT in localStorage
+      localStorage.setItem('token', data.signUp);
     }
   });
 
@@ -57,7 +59,7 @@ const SignUp = (props) => {
     <Wrapper>
       <h2>Sign Up</h2>
       <Form
-        onSubmit={(event) => {
+        onSubmit={event => {
           event.preventDefault();
           signUp({
             variables: {
@@ -70,7 +72,6 @@ const SignUp = (props) => {
         <input
           required
           type="text"
-          id="username"
           name="username"
           placeholder="username"
           onChange={onChange}
@@ -79,7 +80,6 @@ const SignUp = (props) => {
         <input
           required
           type="email"
-          id="email"
           name="email"
           placeholder="Email"
           onChange={onChange}
@@ -88,10 +88,9 @@ const SignUp = (props) => {
         <input
           required
           type="password"
-          id="password"
           name="password"
           placeholder="Password"
-          onChange={onchange}
+          onChange={onChange}
         />
         <Button type="submit">Submit</Button>
       </Form>

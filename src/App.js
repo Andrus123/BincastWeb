@@ -1,3 +1,4 @@
+import React from "react";
 //import Apollo Client libraries
 import {
   ApolloClient,
@@ -29,19 +30,19 @@ const authLink = setContext((_, { headers }) => {
 // configure Apollo Client
 const client = new ApolloClient({
   link: authLink.concat(httpLink),
-  uri,
   cache,
   resolvers: {},
-  connectToDevTools: true,
+  connectToDevTools: true
 });
 
 // check for a local token
 const data = {
   isLoggedIn: !!localStorage.getItem('token')
-}
-
+};
 // write the cache data on initial load
-cache.writeData({ data });
+cache.modify({ data });
+// write the cache data after the cache is reset
+client.onResetStore(() => cache.modify({ data }));
 
 const App = () => {
   return (
